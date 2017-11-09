@@ -17,4 +17,4 @@ def apiRest():
 	return jsonify(var)
 
 
-app.run("localhost", 8080)
+app.run("localhost", 8084)

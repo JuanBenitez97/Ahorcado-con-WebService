@@ -8,6 +8,8 @@ package logica;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -17,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 
 /**
  *
@@ -26,7 +29,7 @@ public class Ahorcado {
 
     
     private int id;
-
+    Notificacion push;
     JTextField campoPalabra;
     JLabel campoIntentos;
     JLabel campoErrores;
@@ -79,7 +82,7 @@ public class Ahorcado {
     }
 
     public String recuperarPalabra() throws IOException {
-        String IP = "http://localhost:8080/api";
+        String IP = "http://localhost:8084/api";
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(IP);
         String palabra1 = "";
@@ -92,9 +95,7 @@ public class Ahorcado {
                String json = EntityUtils.toString(entity);
                System.out.println(json);
                palabra1 = new Gson().fromJson(json, String.class);
-                //palabra1 = EntityUtils.toString(entity);
-                //System.out.println(palabra1);
-
+              
             }
             EntityUtils.consume(entity);
         } finally {
@@ -102,6 +103,12 @@ public class Ahorcado {
         }
 
         System.out.println(palabra1);
+        push = new Notificacion();
+        try {
+            push.enviarPushNotification(palabra1);
+        } catch (JSONException ex) {
+            Logger.getLogger(Ahorcado.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         return palabra1;
     }
